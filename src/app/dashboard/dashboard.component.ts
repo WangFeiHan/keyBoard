@@ -1,4 +1,5 @@
 import { Component, HostListener, AfterViewInit } from '@angular/core';
+import { KeyBoard } from './keyObject/keyObject';
 
 const KEY_CODE_NUM = [
   192, 49, 50, 51, 52, 53, 54, 55, 56, 57, 48, 189, 187, 8,
@@ -15,36 +16,33 @@ const KEY_CODE_NUM = [
   styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements AfterViewInit {
-  public color_none = [
-    'key__front face', 'key__back face', 'key__right face'
-    , 'key__left face', 'key__top face', 'key__bottom face'
-  ];
-
-  private kd; // All key board element
-  public text = ''; // Text show on screen.
+  private kd;
+  public keyBoard = new KeyBoard(); // for template
+  public text = '';
   constructor() { }
 
   ngAfterViewInit() {
     this.kd = document.querySelectorAll('.key');
   }
 
+  searchKeyIndex(event: { keyCode: number, location: number }) {
+    switch (event.keyCode) {
+      case 16:
+        return event.location === 1 ? 41 : 52;
+      case 17:
+        return event.location === 1 ? 53 : 59;
+      case 18:
+        return event.location === 1 ? 55 : 57;
+      default:
+        return KEY_CODE_NUM.indexOf(event.keyCode);
+    }
+  }
 
   @HostListener('window:keydown', ['$event'])
   keyDownEvent(event: KeyboardEvent) {
-    let i = 0;
-    if (event.keyCode === 16) {
-      if (event.location === 1) { i = 41; } else { i = 52; }
-    } else if (event.keyCode === 17) {
-      if (event.location === 1) { i = 53; } else { i = 59; }
-    } else if (event.keyCode === 18) {
-      if (event.location === 1) { i = 55; } else { i = 57; }
-    } else {
-      i = KEY_CODE_NUM.indexOf(event.keyCode);
-    }
-
-    if (i !== -1) {
-      this.kd[i].classList.add('key--down');
-    }
+    console.log(`Click on: ${event.key}`);
+    let i = this.searchKeyIndex(event);
+    this.kd[i].classList.add('key--down');
   }
 
   @HostListener('window:keyup', ['$event'])
@@ -61,17 +59,7 @@ export class DashboardComponent implements AfterViewInit {
       this.text += '\n';
     } else { this.text += event.key; }
 
-    let i = 0;
-    if (event.keyCode === 16) {
-      if (event.location === 1) { i = 41; } else { i = 52; }
-    } else if (event.keyCode === 17) {
-      if (event.location === 1) { i = 53; } else { i = 59; }
-    } else if (event.keyCode === 18) {
-      if (event.location === 1) { i = 55; } else { i = 57; }
-    } else {
-      i = KEY_CODE_NUM.indexOf(event.keyCode);
-    }
-
+    let i = this.searchKeyIndex(event);
     if (i !== -1) {
       this.kd[i].classList.remove('key--down');
     }
