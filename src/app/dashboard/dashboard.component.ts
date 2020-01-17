@@ -42,7 +42,10 @@ export class DashboardComponent implements AfterViewInit {
   keyDownEvent(event: KeyboardEvent) {
     console.log(`Click on: ${event.key}`);
     let i = this.searchKeyIndex(event);
-    this.kd[i].classList.add('key--down');
+
+    if (i !== -1) {
+      this.kd[i].classList.add('key--down');
+    }
   }
 
   @HostListener('window:keyup', ['$event'])
