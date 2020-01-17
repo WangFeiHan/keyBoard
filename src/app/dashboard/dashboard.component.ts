@@ -8,15 +8,20 @@ const KEY_CODE_NUM = [
   17, 91, 18, 32, 18, 93, 17
 ];
 
+
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements AfterViewInit {
-  private kd;
-  public text = '';
+  public color_none = [
+    'key__front face', 'key__back face', 'key__right face'
+    , 'key__left face', 'key__top face', 'key__bottom face'
+  ];
 
+  private kd; // All key board element
+  public text = ''; // Text show on screen.
   constructor() { }
 
   ngAfterViewInit() {
@@ -25,9 +30,7 @@ export class DashboardComponent implements AfterViewInit {
 
 
   @HostListener('window:keydown', ['$event'])
-  keyUpEvent(event: KeyboardEvent) {
-    console.log(`Click on: ${event.key}`);
-
+  keyDownEvent(event: KeyboardEvent) {
     let i = 0;
     if (event.keyCode === 16) {
       if (event.location === 1) { i = 41; } else { i = 52; }
@@ -38,13 +41,25 @@ export class DashboardComponent implements AfterViewInit {
     } else {
       i = KEY_CODE_NUM.indexOf(event.keyCode);
     }
-    this.kd[i].classList.add('key--down');
+
+    if (i !== -1) {
+      this.kd[i].classList.add('key--down');
+    }
   }
 
   @HostListener('window:keyup', ['$event'])
-  keyDownEvent(event: KeyboardEvent) {
+  keyUpEvent(event: KeyboardEvent) {
     console.log(`Click on: ${event.key}`);
-    this.text += event.key;
+    if (event.keyCode === 8) { // Backspace
+      this.text = this.text.substring(0, this.text.length - 1);
+    } else if (event.keyCode === 8 || event.keyCode === 9
+      || event.keyCode === 20 || event.keyCode === 16
+      || event.keyCode === 17 || event.keyCode === 18
+      || event.keyCode === 91 || event.keyCode === 93) {
+      // Do nothing.
+    } else if (event.keyCode === 13) { // Enter
+      this.text += '\n';
+    } else { this.text += event.key; }
 
     let i = 0;
     if (event.keyCode === 16) {
@@ -56,6 +71,9 @@ export class DashboardComponent implements AfterViewInit {
     } else {
       i = KEY_CODE_NUM.indexOf(event.keyCode);
     }
-    this.kd[i].classList.remove('key--down');
+
+    if (i !== -1) {
+      this.kd[i].classList.remove('key--down');
+    }
   }
 }
